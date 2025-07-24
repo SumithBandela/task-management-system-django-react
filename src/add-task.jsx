@@ -10,11 +10,12 @@ export function AddTask() {
 
   const formik = useFormik({
     initialValues: {
-      date: '',
-      hours: '',
+      date:today,
+      hours: 0,
       work_summary: '',
     },
     onSubmit: async (values) => {
+      console.log(values)
       try {
         await axios.post('http://localhost:8000/api/tasks/', values, {
           headers: {
@@ -79,7 +80,7 @@ export function AddTask() {
                   <option value="">Select hours</option>
                   {[...Array(12)].map((_, i) => (
                     <option key={i + 1} value={i + 1}>
-                      {i + 1} hour{i + 1 > 1 ? 's' : ''}
+                      hour {i + 1}
                     </option>
                   ))}
                 </select>

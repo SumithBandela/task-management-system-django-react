@@ -6,24 +6,53 @@ import { getUserInfo } from './utils/auth';
 export function ViewTasks() {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [username, setUsername] = useState('all');
+  const [users, setUsers] = useState([]);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    axios
-      .get('http://localhost:8000/api/tasks/', {
+  
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/tasks/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          start_date: startDate,
+          end_date: endDate,
+          username: username === 'all' ? '' : username, // Pass username filter
+        },
+      });
+      setTasks(response.data);
+    } catch (error) {
+      setError("Unable to fetch tasks. Please login again.");
+      console.error(error);
+    }
+  };
+
+  
+  useEffect(() => {
+  
+    axios.get('http://localhost:8000/api/users/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(response => {
+        setUsers(response.data);  
       })
-      .then((response) => {
-        setTasks(response.data);
-      })
-      .catch((error) => {
-        setError("Unable to fetch tasks. Please login again.");
-        console.error(error);
+      .catch(error => {
+        console.error('Failed to fetch users:', error);
       });
   }, [token]);
+
+  
+  useEffect(() => {
+    fetchTasks();
+  }, [startDate, endDate, username, token]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
@@ -53,6 +82,41 @@ export function ViewTasks() {
       {error && (
         <div className="alert alert-danger text-center">{error}</div>
       )}
+
+      {/* Filter Section */}
+      <div className="mb-4">
+        <div className="d-flex justify-content-between">
+          <div className="d-flex gap-3">
+            <input
+              type="date"
+              className="form-control"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <input
+              type="date"
+              className="form-control"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+            <select
+              className="form-select"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            >
+              <option value="all">All Users</option>
+              {users.map(user => (
+                <option key={user.id} value={user.username}>
+                  {user.username}
+                </option>
+              ))}
+            </select>
+            <button className="btn btn-primary" onClick={fetchTasks}>
+              Search
+            </button>
+          </div>
+        </div>
+      </div>
 
       {tasks.length === 0 ? (
         <div className="text-center text-muted fs-5">
@@ -103,6 +167,7 @@ export function ViewTasks() {
           </table>
         </div>
       )}
+
       <div className="mt-3 text-center">
         <Link to="/dashboard">Back to dashboard</Link>
       </div>
