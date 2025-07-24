@@ -43,11 +43,17 @@ class LoginView(APIView):
 class TaskListView(APIView):
     permission_classes = [IsAdminOrOwner]
     def get(self,request):
-        task = Task.objects.all() if request.user.role == 'admin' else Task.objects.filter(created_by = request.user)
+        tasks = Task.objects.all() if request.user.role == 'admin' else Task.objects.filter(created_by = request.user)
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
+        if start_date and end_date:
+            tasks = tasks.filter(created_at__date__range=[start_date,end_date])
+        
+        username = request.query_params.get('username')
+        if username:
+            tasks = tasks.filter(created_by__username__icontains=username)
 
-        serializer = TaskSerailizer(task,many = True)
+        serializer = TaskSerailizer(tasks,many = True)
         return Response(serializer.data)
     
     def post(self,request):

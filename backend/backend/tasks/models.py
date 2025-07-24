@@ -15,6 +15,6 @@ class User(AbstractUser):
 class Task(models.Model):
     work_summary = models.TextField(null=True)
     date  = models.DateField(null=True)
-    hours =  models.IntegerField(null=True)
+    hours =  models.CharField(null=True)
     created_by = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
