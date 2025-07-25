@@ -8,7 +8,7 @@ from .permissions import is_office_hours , IsAdminOrOwner
 from django.contrib.auth import authenticate,get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 # Create your views here.
-
+User = get_user_model()
 
 class RegisterUserView(APIView):
     
@@ -42,19 +42,40 @@ class LoginView(APIView):
 
 class TaskListView(APIView):
     permission_classes = [IsAdminOrOwner]
-    def get(self,request):
-        tasks = Task.objects.all() if request.user.role == 'admin' else Task.objects.filter(created_by = request.user)
+
+    def get(self, request):
+        # Date filter
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
-        if start_date and end_date:
-            tasks = tasks.filter(created_at__date__range=[start_date,end_date])
-        
-        username = request.query_params.get('username')
-        if username:
-            tasks = tasks.filter(created_by__username__icontains=username)
+        username_filter = request.query_params.get('username')
 
-        serializer = TaskSerailizer(tasks,many = True)
-        return Response(serializer.data)
+        # Admin: get all users and tasks, User: only their own tasks
+        if request.user.role == 'admin':
+            users = User.objects.all()
+        else:
+            users = User.objects.filter(id=request.user.id)
+
+        response_data = []
+
+        for user in users:
+            tasks = Task.objects.filter(created_by=user)
+
+            if start_date and end_date:
+                tasks = tasks.filter(created_at__date__range=[start_date, end_date])
+
+            if username_filter:
+                if username_filter.lower() not in user.username.lower():
+                    continue
+
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'role': user.role,
+                'tasks': TaskSerailizer(tasks, many=True).data
+            }
+            response_data.append(user_data)
+
+        return Response(response_data)
     
     def post(self,request):
         if not is_office_hours():
