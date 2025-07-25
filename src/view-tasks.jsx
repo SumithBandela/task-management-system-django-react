@@ -7,10 +7,15 @@ export function ViewTasks() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [username, setUsername] = useState('all');
+  const[users,setUser] = useState([])
   const token = localStorage.getItem('token');
   let navigate = useNavigate()
   useEffect(() => {
     fetchTasks();
+    axios.get('http://localhost:8000/api/users/')
+    .then(response=>{
+      setUser(response.data)
+    })
   }, [startDate, endDate, username]);
 
   const fetchTasks = async () => {
@@ -80,7 +85,7 @@ export function ViewTasks() {
           onChange={(e) => setUsername(e.target.value)}
         >
           <option value="all">All Users</option>
-          {usersWithTasks.map((user) => (
+          {users.map((user) => (
             <option key={user.id} value={user.username}>
               {user.username}
             </option>
