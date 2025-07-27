@@ -8,7 +8,7 @@ export function AddTask() {
   const today = new Date().toISOString().split('T')[0];
 
   const [date, setDate] = useState(today);
-  const [taskFields, setTaskFields] = useState([{ hour: '', work_summary: '' }]);
+  const [taskFields, setTaskFields] = useState([{ hour: '1', work_summary: '' }]);
 
   const handleChange = (index, field, value) => {
     const updatedFields = [...taskFields];
@@ -17,11 +17,16 @@ export function AddTask() {
   };
 
   const handleAddMore = () => {
-    if (taskFields.length < 13) {
-      setTaskFields([...taskFields, { hour: '', work_summary: '' }]);
-    } else {
+    const usedHours = taskFields.map(task => parseInt(task.hour)).filter(Boolean);
+    const availableHours = [...Array(13)].map((_, i) => i + 1).filter(h => !usedHours.includes(h));
+
+    if (availableHours.length === 0) {
       alert('❗ You can only add up to 13 hours.');
+      return;
     }
+
+    const nextHour = availableHours[0]; // First available hour
+    setTaskFields([...taskFields, { hour: nextHour.toString(), work_summary: '' }]);
   };
 
   const handleSubmit = async (e) => {
@@ -54,7 +59,6 @@ export function AddTask() {
     }
   };
 
-  // Get used hours to disable in other dropdowns
   const usedHours = taskFields.map(task => parseInt(task.hour)).filter(Boolean);
 
   return (
@@ -64,25 +68,20 @@ export function AddTask() {
           <div className="card p-4 shadow rounded-4" style={{ backgroundColor: '#f9f9f9' }}>
             <h3 className="text-center text-primary mb-4">Add Tasks</h3>
             <form onSubmit={handleSubmit}>
-              {/* Date Field */}
               <div className="mb-3">
                 <label className="form-label">📅 Date</label>
                 <input
                   type="date"
                   className="form-control"
                   value={date}
-                  min={today}
-                  max={today}
                   onChange={(e) => setDate(e.target.value)}
                   required
                 />
               </div>
 
-              {/* Dynamic Task Fields */}
               {taskFields.map((task, index) => (
                 <div key={index} className="mb-4 border rounded p-3 bg-light">
                   <div className="row">
-                    {/* Hours Dropdown */}
                     <div className="col-md-3 mb-2">
                       <label className="form-label">⏱️ Hour</label>
                       <select
@@ -104,7 +103,6 @@ export function AddTask() {
                       </select>
                     </div>
 
-                    {/* Work Summary */}
                     <div className="col-md-9 mb-2">
                       <label className="form-label">📝 Work Summary</label>
                       <textarea
@@ -120,7 +118,6 @@ export function AddTask() {
                 </div>
               ))}
 
-              {/* Add More Button */}
               <div className="d-flex justify-content-end mb-4">
                 <button type="button" className="btn btn-outline-primary" onClick={handleAddMore}>
                   ➕ Add More
