@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { getUserInfo } from './utils/auth';
 
 export function ViewTasks() {
@@ -204,10 +204,6 @@ export function ViewTasks() {
           })}
         </>
       )}
-
-      <div>
-        <Link to="/dashboard">Back to dashboard</Link>
-      </div>
     </div>
   );
 }

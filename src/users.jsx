@@ -49,7 +49,7 @@ export function Users() {
               {users.length > 0 ? (
                 users.map((user) => (
                   <tr key={user.id}>
-                    <td>{user.username}</td>
+                    <td>{user.username.toUpperCase()}</td>
                     <td>
                       <select
                         className={`form-select ${user.is_active ? "border-success" : "border-danger"}`}
