@@ -74,9 +74,9 @@ export function ViewTasks() {
   return (
     <div className="container py-4">
       <h2 className="mb-4">📆 Task List</h2>
-      <button onClick={() => navigate('/add-task')} className="btn btn-outline-success px-4 shadow-sm m-2 ms-0">
+      {getUserInfo()?.role !=='admin' && (<button onClick={() => navigate('/add-task')} className="btn btn-outline-success px-4 shadow-sm m-2 ms-0">
         Add Task
-      </button>
+      </button>)}
 
       {getUserInfo()?.role === 'admin' && (
         <div className="d-flex gap-3 mb-4">
@@ -102,6 +102,7 @@ export function ViewTasks() {
               </option>
             ))}
           </select>
+          
           <button className="btn btn-primary" onClick={handleSearchClick}>
             Search
           </button>
@@ -133,7 +134,7 @@ export function ViewTasks() {
 
               return (
                 <div key={date} className="mb-5">
-                  <h5 className="bg-secondary text-white p-2 rounded">📅 {date}</h5>
+                  <h5 className="bg-secondary text-white p-2 rounded " style={{width:'200px'}}>📅 {date}</h5>
                   <table className="table table-bordered table-striped">
                     <thead className="table-success">
                       <tr>
@@ -176,7 +177,7 @@ export function ViewTasks() {
 
             return (
               <div key={user.id}>
-                <h5 className="bg-info p-2">User: {user.username}</h5>
+                <h5 className="bg-secondary text-white p-2 rounded" style={{width:'200px'}}>User: {user.username}</h5>
                 <table className="table table-bordered table-striped">
                   <thead className="table-success">
                     <tr>

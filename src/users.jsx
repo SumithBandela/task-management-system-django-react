@@ -12,12 +12,15 @@ export function Users() {
     axios.get("http://localhost:8000/api/users/")
       .then((response) => {
         setUsers(response.data);
-        console.log(response.data)
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
       });
   };
 
   const handleStatusChange = (userId, newStatus) => {
-    axios.patch(`http://localhost:8000/api/users/${userId}/`, {
+    axios.patch("http://localhost:8000/api/users/", {
+      user_id: userId,
       is_active: newStatus
     })
     .then(() => {

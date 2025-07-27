@@ -74,6 +74,8 @@ export function AddTask() {
                   type="date"
                   className="form-control"
                   value={date}
+                  min={today}
+                  max={today}
                   onChange={(e) => setDate(e.target.value)}
                   required
                 />

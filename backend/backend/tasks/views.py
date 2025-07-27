@@ -31,6 +31,7 @@ class LoginView(APIView):
             
             access_token = refresh.access_token
             access_token['role'] = user.role  
+            access_token['username'] = user.username
             
             return Response({
                 "access": str(access_token), 
@@ -136,3 +137,18 @@ class UserListView(APIView):
         serializer = UserSerializer(user,many=True)
         return Response(serializer.data)
     
+    def patch(self, request):
+        user_id = request.data.get('user_id')
+        is_active = request.data.get('is_active')
+
+        if user_id is None or is_active is None:
+            return Response({'error': 'user_id and is_active are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user.is_active = is_active
+        user.save()
+        return Response({'message': 'User status updated.', 'user_id': user.id, 'is_active': user.is_active})
