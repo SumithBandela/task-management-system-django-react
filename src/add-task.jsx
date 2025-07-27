@@ -1,5 +1,4 @@
-import React from 'react';
-import { useFormik } from 'formik';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,106 +7,128 @@ export function AddTask() {
   const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
 
-  const formik = useFormik({
-    initialValues: {
-      date:today,
-      hours: 0,
-      work_summary: '',
-    },
-    onSubmit: async (values) => {
-      console.log(values)
-      try {
-        await axios.post('http://localhost:8000/api/tasks/', values, {
+  const [date, setDate] = useState(today);
+  const [taskFields, setTaskFields] = useState([{ hour: '', work_summary: '' }]);
+
+  const handleChange = (index, field, value) => {
+    const updatedFields = [...taskFields];
+    updatedFields[index][field] = value;
+    setTaskFields(updatedFields);
+  };
+
+  const handleAddMore = () => {
+    if (taskFields.length < 13) {
+      setTaskFields([...taskFields, { hour: '', work_summary: '' }]);
+    } else {
+      alert('❗ You can only add up to 13 hours.');
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    for (const task of taskFields) {
+      if (!task.hour || !task.work_summary) {
+        alert('⚠️ Please fill all hour and work summary fields.');
+        return;
+      }
+    }
+
+    try {
+      for (const task of taskFields) {
+        await axios.post('http://localhost:8000/api/tasks/', {
+          date,
+          hours: task.hour,
+          work_summary: task.work_summary,
+        }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        alert('✅ Task added successfully!');
-        navigate('/tasks');
-      } catch (error) {
-        if (error.response?.status === 403) {
-          alert('❌ Cannot add tasks after office hours.');
-        } else {
-          alert('⚠️ Failed to add task. Please try again.');
-        }
-        console.error(error);
       }
-    },
-  });
+      alert('✅ Tasks added successfully!');
+      navigate('/tasks');
+    } catch (error) {
+      console.error(error);
+      alert('❌ Failed to add tasks.');
+    }
+  };
+
+  // Get used hours to disable in other dropdowns
+  const usedHours = taskFields.map(task => parseInt(task.hour)).filter(Boolean);
 
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card p-5 shadow-lg rounded-4" style={{ backgroundColor: '#f9f9f9' }}>
-            <h3 className="text-center text-primary mb-4">Add New Task</h3>
-
-            <form onSubmit={formik.handleSubmit}>
-              {/* Date Field at Top */}
-              <div className="mb-4">
-                <label className="form-label text-secondary">📅 Date</label>
+        <div className="col-md-8">
+          <div className="card p-4 shadow rounded-4" style={{ backgroundColor: '#f9f9f9' }}>
+            <h3 className="text-center text-primary mb-4">Add Tasks</h3>
+            <form onSubmit={handleSubmit}>
+              {/* Date Field */}
+              <div className="mb-3">
+                <label className="form-label">📅 Date</label>
                 <input
                   type="date"
-                  name="date"
-                  className="form-control shadow-sm"
-                  onChange={formik.handleChange}
-                  value={formik.values.date || today} // pre-fill today's date
+                  className="form-control"
+                  value={date}
                   min={today}
                   max={today}
+                  onChange={(e) => setDate(e.target.value)}
                   required
-                  style={{
-                    borderRadius: '10px',
-                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-                  }}
                 />
-
               </div>
 
-              {/* Hours Dropdown */}
-              <div className="mb-4">
-                <label className="form-label text-secondary">⏱️ Hours</label>
-                <select
-                  name="hours"
-                  className="form-control shadow-sm"
-                  onChange={formik.handleChange}
-                  value={formik.values.hours}
-                  required
-                  style={{
-                    borderRadius: '10px',
-                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-                  }}
-                >
-                  <option value="">Select hours</option>
-                  {[...Array(12)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      hour {i + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* Dynamic Task Fields */}
+              {taskFields.map((task, index) => (
+                <div key={index} className="mb-4 border rounded p-3 bg-light">
+                  <div className="row">
+                    {/* Hours Dropdown */}
+                    <div className="col-md-3 mb-2">
+                      <label className="form-label">⏱️ Hour</label>
+                      <select
+                        className="form-control"
+                        value={task.hour}
+                        onChange={(e) => handleChange(index, 'hour', e.target.value)}
+                        required
+                      >
+                        <option value="">Select hour</option>
+                        {[...Array(13)].map((_, i) => (
+                          <option
+                            key={i + 1}
+                            value={i + 1}
+                            disabled={usedHours.includes(i + 1) && parseInt(task.hour) !== (i + 1)}
+                          >
+                            Hour {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-              {/* Work Summary at Bottom */}
-              <div className="mb-4">
-                <label className="form-label text-secondary">📝 Work Summary</label>
-                <textarea
-                  name="work_summary"
-                  className="form-control shadow-sm"
-                  rows="5"
-                  onChange={formik.handleChange}
-                  value={formik.values.work_summary}
-                  required
-                  placeholder="Describe what you worked on"
-                  style={{
-                    borderRadius: '10px',
-                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-                  }}
-                ></textarea>
+                    {/* Work Summary */}
+                    <div className="col-md-9 mb-2">
+                      <label className="form-label">📝 Work Summary</label>
+                      <textarea
+                        className="form-control"
+                        rows="2"
+                        placeholder="What did you work on?"
+                        value={task.work_summary}
+                        onChange={(e) => handleChange(index, 'work_summary', e.target.value)}
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Add More Button */}
+              <div className="d-flex justify-content-end mb-4">
+                <button type="button" className="btn btn-outline-primary" onClick={handleAddMore}>
+                  ➕ Add More
+                </button>
               </div>
 
               <div className="d-grid">
-                <button type="submit" className="btn btn-primary btn-lg" style={{ borderRadius: '10px' }}>
-                  Add Task
-                </button>
+                <button type="submit" className="btn btn-primary btn-lg">Add Task</button>
               </div>
             </form>
 
