@@ -1,8 +1,6 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { UserLogin } from './user-login';
-import { AdminLogin } from './admin-login';
-import { Home } from './home';
 import { Dashboard } from './dashboard';
 import { ViewTasks } from './view-tasks';
 import { PrivateRoute } from './private-route';
