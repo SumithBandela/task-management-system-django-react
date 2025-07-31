@@ -20,14 +20,19 @@ export function  EditEmployee(){
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).then((res) => setInitialValues(res.data));
+    }).then((res) =>{
+       setInitialValues(res.data)} );
   }, [id]);
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues,
     onSubmit: async (values) => {
-      await axios.put(`/api/employees/${id}/`, values);
+      await axios.put(`http://127.0.0.1:8000/api/employees/${id}/`, values,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
       navigate("/employees");
     },
   });
@@ -36,7 +41,7 @@ export function  EditEmployee(){
     <div className="container mt-5">
       <h3 className="mb-4 text-primary">Edit Employee</h3>
       <form onSubmit={formik.handleSubmit} className="shadow p-4 bg-light rounded">
-        {["name", "email", "phone", "designation", "password"].map((field) => (
+        {["name", "phone", "designation", "password"].map((field) => (
           <div className="mb-3" key={field}>
             <label className="form-label text-capitalize">{field}</label>
             <input
