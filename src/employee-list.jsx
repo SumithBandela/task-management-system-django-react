@@ -17,7 +17,7 @@ export function EmployeeList(){
 
 
   const toggleStatus = async (id, action) => {
-    await axios.patch(` http://127.0.0.1:8000/api/employees/${id}/${action}/`,{
+    await axios.delete(` http://127.0.0.1:8000/api/employees/${id}/${action}/`,{
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -68,7 +68,7 @@ export function EmployeeList(){
                 ) : (
                   <button
                     className="btn btn-sm btn-success"
-                    onClick={() => toggleStatus(emp.id, "activate")}
+                    onClick={() => toggleStatus(emp.id, "reactivate")}
                   >
                     Activate
                   </button>

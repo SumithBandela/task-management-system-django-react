@@ -20,7 +20,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         )
 
         employee = Employee.objects.create(user=user,**validate_data)
-        return employee
+        return employee 
     
     def update(self,instance,validate_data):
         password = self.validated_data.pop('password',None)

@@ -72,8 +72,12 @@ class EmployeeDetailAPIView(APIView):
         employee.user.save()
         return Response({'message','Employee deactivated successfully'})
     
-    def post(self,request,pk):
-        employee = self.get_object(pk)
+    
+    
+class EmployeeReactivateView(APIView):
+    permission_classes = [IsAuthenticated,IsAdminOrOwner]
+    def delete(self,request,pk):
+        employee = Employee.objects.get(pk=pk)
         if not employee:
             return Response({'error':'Employee not found'},status=status.HTTP_404_NOT_FOUND)
         employee.user.is_active = True

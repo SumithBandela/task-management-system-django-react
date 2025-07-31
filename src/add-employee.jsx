@@ -39,7 +39,7 @@ export function AddEmployee() {
             />
           </div>
         ))}
-        <button type="submit" className="btn btn-success">Save</button>
+        <button type="submit" className="btn btn-success ">Save</button>
       </form>
     </div>
   );
