@@ -21,12 +21,15 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
         employee = Employee.objects.create(user=user,**validate_data)
         return employee 
-    
-    def update(self,instance,validate_data):
-        password = self.validated_data.pop('password',None)
-        for attr, value in validate_data.items():
-            setattr(instance,attr,value)
+
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
+
         if password:
             instance.user.set_password(password)
             instance.user.save()
