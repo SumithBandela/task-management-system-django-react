@@ -34,7 +34,7 @@ export function Users() {
   return (
     <div className="container mt-4">
       <div className="card shadow">
-        <div className="card-header bg-primary text-white">
+        <div className="card-header bg-success text-white">
           <h4 className="mb-0">User Management Dashboard</h4>
         </div>
         <div className="card-body">
@@ -49,7 +49,7 @@ export function Users() {
               {users.length > 0 ? (
                 users.map((user) => (
                   <tr key={user.id}>
-                    <td>{user.username.toUpperCase()}</td>
+                    <td>{user.username}</td>
                     <td>
                       <select
                         className={`form-select ${user.is_active ? "border-success" : "border-danger"}`}

@@ -8,6 +8,9 @@ import { AddTask } from './add-task';
 import { EditTask } from './edit-task';
 import { Users } from './users';
 import { Navbar } from './navbar';
+import { AddEmployee } from './add-employee';
+import { EditEmployee } from './edit-employee';
+import { EmployeeList } from './employee-list';
 
 
 function App() {
@@ -22,6 +25,9 @@ function App() {
         <Route path='/tasks' element={<PrivateRoute><ViewTasks/></PrivateRoute>}/>
         <Route path='/add-task' element={<PrivateRoute><AddTask/></PrivateRoute>}/>
         <Route path='/edit-task/:id' element={<PrivateRoute><EditTask/></PrivateRoute>}/>
+        <Route path="/employees" element={<PrivateRoute><EmployeeList /></PrivateRoute>} />
+        <Route path="/employees/add" element={<PrivateRoute><AddEmployee /></PrivateRoute>} />
+        <Route path="/employees/edit/:id" element={<PrivateRoute><EditEmployee /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );

@@ -134,7 +134,7 @@ export function ViewTasks() {
 
               return (
                 <div key={date} className="mb-5">
-                  <h5 className="bg-secondary text-white p-2 rounded " style={{width:'200px'}}>📅 {date}</h5>
+                  <h5 className="bg-success text-white p-2 rounded  " style={{width:'200px'}}>📅 {date}</h5>
                   <table className="table table-bordered table-striped">
                     <thead className="table-success">
                       <tr>
@@ -177,7 +177,7 @@ export function ViewTasks() {
 
             return (
               <div key={user.id}>
-                <h5 className="bg-secondary text-white p-2 rounded" style={{width:'200px'}}>User: {user.username}</h5>
+                <h5 className="bg-success text-white p-2 rounded" style={{width:'300px'}}>User: {user.username}</h5>
                 <table className="table table-bordered table-striped">
                   <thead className="table-success">
                     <tr>
