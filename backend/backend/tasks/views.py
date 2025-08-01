@@ -45,12 +45,10 @@ class TaskListView(APIView):
     permission_classes = [IsAdminOrOwner]
 
     def get(self, request):
-        # Date filter
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
         username_filter = request.query_params.get('username')
 
-        # Admin: get all users and tasks, User: only their own tasks
         if request.user.role == 'admin':
             users = User.objects.all()
         else:
